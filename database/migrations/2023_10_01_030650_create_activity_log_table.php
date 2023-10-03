@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('name');
             $table->timestamps();
         });
-        Schema::create('activity_log', function (Blueprint $table) {
+        Schema::create('activity_logs', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('performed_by_user_id');
             $table->nullableMorphs('model');
