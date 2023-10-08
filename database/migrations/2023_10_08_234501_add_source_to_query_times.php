@@ -11,11 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('query_types', function (Blueprint $table) {
-            $table->id();
-            $table->string('identifier')->unique();
-            $table->text('description');
-            $table->timestamps();
+        Schema::table('query_times', function (Blueprint $table) {
+            $table->enum('source', ['elasticsearch', 'mysql'])->after('time_in_ms');
         });
     }
 
@@ -24,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('query_types');
+        Schema::table('query_times', function (Blueprint $table) {
+            $table->dropColumn('source');
+        });
     }
 };

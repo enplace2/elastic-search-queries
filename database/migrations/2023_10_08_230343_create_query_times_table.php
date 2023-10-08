@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('query_types', function (Blueprint $table) {
+        Schema::create('query_times', function (Blueprint $table) {
             $table->id();
-            $table->string('identifier')->unique();
-            $table->text('description');
+            $table->unsignedBigInteger('query_type_id');
+            $table->foreign('query_type_id')->references('id')->on('query_types')->onDelete('cascade');
+            $table->float('time_in_ms');
             $table->timestamps();
         });
     }
@@ -24,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('query_types');
+        Schema::dropIfExists('query_times');
     }
 };
