@@ -18,16 +18,6 @@ class ElasticsearchService
             ->build();
     }
 
-    public function index(string $index, array $data)
-    {
-        $params = [
-            'index' => $index,
-            'body'  => $data
-        ];
-
-        return $this->client->index($params);
-    }
-
     public function search(string $index, array $query)
     {
         $params = [
@@ -40,7 +30,7 @@ class ElasticsearchService
         return $this->client->search($params);
     }
 
-    public function createIndex(string $indexName, array $settings = [], array $mappings = []): Elasticsearch|Promise
+    public function createIndex(string $indexName, array $settings = [], array $mappings = [])
     {
         $body = [];
 
@@ -57,8 +47,79 @@ class ElasticsearchService
             'body'  => $body
         ];
 
-        return $this->client->indices()->create($params);
+        $response = $this->client->indices()->create($params);
+        $body = $response->getBody();
+        return json_decode($body, true);
     }
+
+    public function getMapping($indexName)
+    {
+        $params = ['index' => $indexName];
+        $response = $this->client->indices()->getMapping($params);
+        return $response;
+    }
+
+
+    public function createDocument(string $indexName, array $data, $documentId = null)
+    {
+        $params = [
+            'index' => $indexName,
+            'body'  => [
+                'properties'=>$data
+            ],
+            'op_type' => 'create' // This ensures the operation fails if the document ID already exists
+        ];
+
+        if ($documentId) {
+            $params['id'] = $documentId;
+        }
+
+        $response = $this->client->index($params);
+        $body = $response->getBody();
+        return json_decode($body, true);
+    }
+
+    public function updateMapping(string $indexName, array $newFields)
+    {
+        $params = [
+            'index' => $indexName,
+            'body' => $newFields
+        ];
+
+        return $this->client->indices()->putMapping($params);
+    }
+
+
+    public function getAllDocuments(string $indexName)
+    {
+        $params = [
+            'index' => $indexName,
+            'body' => [
+                'query' => [
+                    'match_all' => new \stdClass()
+                ],
+                //'size' => 100  // Gets the first 100 docs. Don't use this function if your dataset is large.
+            ]
+        ];
+
+        return $this->client->search($params);
+    }
+
+    public function getDocumentCount(string $indexName)
+    {
+        $params = ['index' => $indexName];
+        $response = $this->client->count($params);
+        return $response;
+    }
+
+    public function deleteIndex($indexName){
+        $params = ['index' => $indexName];
+
+        $response = $this->client->indices()->delete($params);
+        return $response;
+    }
+
+
 
 
 }

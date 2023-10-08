@@ -7,7 +7,7 @@ use App\Services\ElasticsearchService;
 
 class ElasticSearchActivityLog
 {
-    public string $indexName = 'activity_logszzz';
+    public string $indexName = 'activity_logs';
 
     public array $settings = [
         'number_of_shards' => 3,
@@ -23,16 +23,25 @@ class ElasticSearchActivityLog
                 'type' => 'integer'
             ],
             'model_type' => [
-                'type' => 'keyword' //https://www.elastic.co/guide/en/elasticsearch/reference/current/keyword.html
+                'type' => 'keyword'
             ],
             'model_id' => [
                 'type' => 'integer'
             ],
             'properties' => [
-                'type' => 'object' // https://www.elastic.co/guide/en/elasticsearch/reference/current/object.html
+                'type' => 'object'
+            ],
+            'created_at' => [
+                'type' => 'date',
+                'format' => 'strict_date_optional_time||epoch_millis'
+            ],
+            'updated_at' => [
+                'type' => 'date',
+                'format' => 'strict_date_optional_time||epoch_millis'
             ]
         ]
     ];
+
 
 
     public function createIndex()
@@ -40,5 +49,18 @@ class ElasticSearchActivityLog
         $client = new ElasticsearchService();
         return $client->createIndex(indexName: $this->indexName, settings: $this->settings, mappings: $this->mappings);
     }
+
+    public function deleteIndex(){
+        $client = new ElasticsearchService();
+        $client->deleteIndex($this->indexName);
+    }
+
+   public function deleteAndRecreateIndex(){
+        $this->deleteIndex();
+        $this->createIndex();
+       $client = new ElasticsearchService();
+       return $client->getMapping($this->indexName);
+
+   }
 }
 
