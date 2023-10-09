@@ -4,31 +4,28 @@ namespace App\Queries;
 
 use App\Models\ActivityLog;
 use App\Models\QueryType;
-use App\Services\ElasticsearchService;
 use App\Traits\ElasticsearchQuery;
+use App\Traits\QueriesMysql;
 use App\Traits\LogsQueryTimes;
-use Elastic\Elasticsearch\Exception\ClientResponseException;
-use Elastic\Elasticsearch\Exception\ElasticsearchException;
-use Elastic\Elasticsearch\Exception\ServerResponseException;
 
 class GetByIdQuery
 {
-    use LogsQueryTimes, ElasticsearchQuery;
+    use LogsQueryTimes, QueriesMysql, ElasticsearchQuery;
 
-    private int $queryTpeId = 0;
+    private int $queryTypeId = 0;
     public function __construct()
     {
         $this->initializeElasticsearchQueryTrait();
-    }
-
-    public function run() {
+        $this->initializeQueriesMysqlTrait();
 
         // first or create the type
         $queryType = $this->firstOrCreateType();
-        $this->queryTpeId = $queryType->id;
+        $this->queryTypeId = $queryType->id;
+    }
 
-        // do elasticsearch query
+    public function run() {
         $this->queryOnElasticSearch();
+        $this->queryOnMySQL();
 
     }
 
@@ -42,10 +39,13 @@ class GetByIdQuery
     public function queryOnElasticSearch(): void
     {
         $response = $this->service->getDocumentById($this->randomElasticSearchId,'activity_logs');
-        $this->logElasticSearchQueryTime($response, $this->queryTpeId);
+        $this->logElasticSearchQueryTime($response, $this->queryTypeId);
     }
 
     public function queryOnMySQL(){
-
+            $randomId = $this->getRandomMysqlId();
+            $query = ActivityLog::whereId($randomId);
+            $results = $this->runQueryAndRecordTime($query, 'first');
+            $this->logMysqlQueryTime($this->queryTypeId, $results);
     }
 }

@@ -14,7 +14,7 @@ trait LogsQueryTimes
      * @param array|null $queryResults Results of the query.
      * @return void
      */
-    public function logQueryTime(int $queryTypeId, int $duration, string $source, string $queryResults, int $totalRecordsAtRuntime, ?int $shards): void
+    public function logQueryTime(int $queryTypeId, int $duration, string $source, string $queryResults, int $totalRecordsAtRuntime, ?int $shards = null): void
     {
         // Create the new QueryTime record.
         QueryTime::create([

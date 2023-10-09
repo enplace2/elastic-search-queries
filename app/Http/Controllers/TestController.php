@@ -13,13 +13,20 @@ use Illuminate\Http\Request;
 class TestController extends Controller
 {
     //
-    public function test(): string
+    public function test()
     {
 
-        //return QueryTime::latest()->first();
+        //$qt = QueryTime::latest()->first();
+        //return $qt;
+        //$qt->query_results = json_decode($qt->query_results);
+
+        //dd(json_decode($qt->query_results));
+        //dd($qt->toArray());
 
         $query = new GetByIdQuery();
         $query->run();
+
+
         dd("success");
         $service = new ElasticsearchService();
         $log = $service->getDocumentById(18290726, 'activity_logs');

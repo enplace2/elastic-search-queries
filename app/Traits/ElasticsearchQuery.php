@@ -22,7 +22,8 @@ trait ElasticsearchQuery
     {
         $elasticSearchCountInfo = $this->getElasticsearchCountInfo();
         $duration = $responseArray['took'];
-        $jsonResponseArray = json_encode($responseArray);
+        $jsonResponseArray = json_encode($responseArray, JSON_UNESCAPED_SLASHES);
+
 
 
         $this->logQueryTime(

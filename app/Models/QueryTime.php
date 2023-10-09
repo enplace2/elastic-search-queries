@@ -10,6 +10,10 @@ class QueryTime extends Model
     use HasFactory;
 
     protected $guarded = [];
+    protected $casts = [
+        'query_results' => 'object',
+    ];
+
 
     public function queryType()
     {
