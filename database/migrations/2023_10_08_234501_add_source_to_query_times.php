@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::table('query_times', function (Blueprint $table) {
             $table->enum('source', ['elasticsearch', 'mysql'])->after('time_in_ms');
+            $table->integer('total_records_at_run_time');
+            $table->json('query_results');
+            $table->integer('shards')->nullable();
         });
     }
 
@@ -23,6 +26,9 @@ return new class extends Migration
     {
         Schema::table('query_times', function (Blueprint $table) {
             $table->dropColumn('source');
+            $table->dropColumn('total_records_at_run_time');
+            $table->dropColumn('query_results');
+            $table->dropColumn('shards');
         });
     }
 };

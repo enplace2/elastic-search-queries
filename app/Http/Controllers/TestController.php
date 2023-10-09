@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\ActivityLog;
 use App\Models\ElasticSearchModels\ElasticSearchActivityLog;
+use App\Models\QueryTime;
+use App\Models\QueryType;
+use App\Queries\GetByIdQuery;
 use App\Services\ElasticsearchService;
 use Illuminate\Http\Request;
 
@@ -12,15 +15,22 @@ class TestController extends Controller
     //
     public function test(): string
     {
-        $client = new ElasticsearchService();
-        //dd($activityLog->toArray());
 
-        $response = $client->getDocumentCount('activity_logs');
+        //return QueryTime::latest()->first();
 
-        //dd($response);
-        $body = $response->getBody();
-        dd(json_decode($body, true));
-        dd($activityLog->toArray());
+        $query = new GetByIdQuery();
+        $query->run();
+        dd("success");
+        $service = new ElasticsearchService();
+        $log = $service->getDocumentById(18290726, 'activity_logs');
+        dd($log);
+
+        dd($log);
+
+
+        $query = new GetByIdQuery();
+        $query->run();
+        dd("success");
 
     }
 }

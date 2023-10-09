@@ -3,12 +3,13 @@
 namespace App\Services;
 
 use Elastic\Elasticsearch\ClientBuilder;
+use Elastic\Elasticsearch\Exception\ElasticsearchException;
 use Elastic\Elasticsearch\Response\Elasticsearch;
 use Http\Promise\Promise;
 
 class ElasticsearchService
 {
-    protected $client;
+    public $client;
 
     public function __construct()
     {
@@ -16,6 +17,14 @@ class ElasticsearchService
         $this->client = ClientBuilder::create()
             ->setHosts(['localhost:9200'])
             ->build();
+    }
+
+    public function handleElasticSearchException(ElasticsearchException $e){
+        $errorMessage = "Elasticsearch Server Response Exception:\n";
+        $errorMessage .= "Message: " . $e->getMessage() . "\n";
+        $errorMessage .= "Trace: " . $e->getTraceAsString();
+
+        \Log::error($errorMessage);
     }
 
     public function search(string $index, array $query)
@@ -119,6 +128,48 @@ class ElasticsearchService
         return $response;
     }
 
+    public function getRandomDocumentFromActivityLogs()
+    {
+        $params = [
+            'index' => 'activity_logs',
+            'body'  => [
+                'query' => [
+                    'function_score' => [
+                        'query' => [
+                            'match_all' => new \stdClass()  // Match all documents
+                        ],
+                        'functions' => [
+                            [
+                                'random_score' => new \stdClass()  // Randomly score each document
+                            ]
+                        ]
+                    ]
+                ],
+                'size' => 1  // Return only one document
+            ]
+        ];
+
+        $response = $this->client->search($params);
+        return $response->asArray();
+    }
+
+
+    public function getDocumentById($id, $index)
+    {
+        $params = [
+            'index' => $index,
+            'body'  => [
+                'query' => [
+                    'term' => [
+                        'id' => $id
+                    ]
+                ]
+            ]
+        ];
+
+        $response =  $this->client->search($params);
+        return $response->asArray();
+    }
 
 
 
