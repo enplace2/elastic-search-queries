@@ -18,21 +18,20 @@ trait ElasticsearchQuery
     }
 
 
-    public function logElasticSearchQueryTime($responseArray, int $queryTypeId): void
+    public function logElasticSearchQueryTime($responseArray, int $queryTypeId, $logQueryResults = true): void
     {
         $elasticSearchCountInfo = $this->getElasticsearchCountInfo();
         $duration = $responseArray['took'];
         $jsonResponseArray = json_encode($responseArray, JSON_UNESCAPED_SLASHES);
 
-
-
         $this->logQueryTime(
             queryTypeId: $queryTypeId,
             duration: $duration,
             source: 'elasticsearch',
-            queryResults: $jsonResponseArray,
+            queryResults: $logQueryResults ? $jsonResponseArray : '',
             totalRecordsAtRuntime: $elasticSearchCountInfo["count"],
-            shards: $elasticSearchCountInfo["_shards"]["successful"]
+            shards: $elasticSearchCountInfo["_shards"]["successful"],
+            recordsReturned: count($responseArray["hits"]["hits"])
         );
     }
 

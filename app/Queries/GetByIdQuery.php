@@ -13,10 +13,10 @@ class GetByIdQuery
     use LogsQueryTimes, QueriesMysql, ElasticsearchQuery;
 
     private int $queryTypeId = 0;
-    public function __construct()
+    public function __construct($totalRecordCount)
     {
         $this->initializeElasticsearchQueryTrait();
-        $this->initializeQueriesMysqlTrait();
+        $this->initializeQueriesMysqlTrait($totalRecordCount);
 
         // first or create the type
         $queryType = $this->firstOrCreateType();

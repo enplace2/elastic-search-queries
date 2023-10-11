@@ -11,9 +11,9 @@ trait QueriesMysql
 {
     use LogsQueryTimes;
 
-    public function initializeQueriesMysqlTrait(): void
+    public function initializeQueriesMysqlTrait($totalRecordCount): void
     {
-       $this->totalRecordCount = ActivityLog::count();
+       $this->totalRecordCount = $totalRecordCount;
     }
 
     public function runQueryAndRecordTime(Builder $query, string $method = 'get', $param = null): array
@@ -45,9 +45,16 @@ trait QueriesMysql
     {
         $duration = $queryTimeResults['took'];
         $results = $queryTimeResults['results'];
+        $numberOfResults = $results->count();
         $results = json_encode($results);
 
-        $this->logQueryTime($queryTypeId, $duration, 'mysql', $results, $this->totalRecordCount);
+        $this->logQueryTime(
+            $queryTypeId,
+            $duration,
+            'mysql',
+            $results,
+            $this->totalRecordCount,
+            recordsReturned: $numberOfResults);
     }
 
     public function getRandomMysqlId(){

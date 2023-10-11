@@ -171,6 +171,23 @@ class ElasticsearchService
         return $response->asArray();
     }
 
+    public function getByModelType($modelType, $size = 500)
+    {
+        $params = [
+            'index' => 'activity_logs',
+            'size' => $size,
+            'body'  => [
+                'query' => [
+                    'term' => [
+                        'model_type' => $modelType
+                    ]
+                ]
+            ]
+        ];
+
+        return $this->client->search($params)->asArray();
+    }
+
 
 
 }

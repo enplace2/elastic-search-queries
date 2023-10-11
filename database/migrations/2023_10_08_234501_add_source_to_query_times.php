@@ -16,6 +16,7 @@ return new class extends Migration
             $table->integer('total_records_at_run_time');
             $table->json('query_results');
             $table->integer('shards')->nullable();
+            $table->integer('number_of_records_returned');
         });
     }
 
