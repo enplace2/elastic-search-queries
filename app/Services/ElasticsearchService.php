@@ -223,6 +223,49 @@ class ElasticsearchService
         return $response->asArray();
     }
 
+    public function searchProperties($key, $value, $size, $matchType)
+    {
+        $params = [
+            'index' => 'activity_logs',
+            'size'  => $size,
+            'body'  => [
+                'query' => [
+                    $matchType => [
+                        "properties.$key" => $value
+                    ]
+                ]
+            ]
+        ];
+
+        return $this->client->search($params)->asArray();
+    }
+
+    public function searchPropertiesByRange($min, $max, $key, $size, $format = null)
+    {
+
+        $range = [
+            'gte' => $min,  // Greater than or equal to
+            'lte' => $max   // Less than or equal to
+        ];
+        if($format){
+           $range =  array_merge($range, ['format' => $format]);
+        }
+
+
+        $params = [
+            'index' => 'activity_logs',
+            'size'  => $size,
+            'body'  => [
+                'query' => [
+                    'range' => [
+                        "properties.$key" => $range,
+                    ]
+                ]
+            ]
+        ];
+
+        return $this->client->search($params);
+    }
 
 
 

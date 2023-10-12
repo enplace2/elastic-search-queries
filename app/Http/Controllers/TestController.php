@@ -21,7 +21,7 @@ class TestController extends Controller
     {
 
         $service = new ElasticsearchService();
-        $log = $service->getRandomDocumentFromActivityLogs(18290726, 'activity_logs');
+        $log = $service->searchProperties('key1', 'ipsa', 7000);
         dd($log);
         $count = 50000000;//ActivityLog::count();
         $query = new GetByUserIdQuery($count, 7000);
