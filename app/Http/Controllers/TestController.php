@@ -7,8 +7,10 @@ use App\Models\Address;
 use App\Models\ElasticSearchModels\ElasticSearchActivityLog;
 use App\Models\QueryTime;
 use App\Models\QueryType;
+use App\Queries\GetByActivityTypeQuery;
 use App\Queries\GetByIdQuery;
 use App\Queries\GetByModelTypeQuery;
+use App\Queries\GetByUserIdQuery;
 use App\Services\ElasticsearchService;
 use Illuminate\Http\Request;
 
@@ -18,7 +20,11 @@ class TestController extends Controller
     public function test()
     {
 
-        $query = new GetByModelTypeQuery(50000000, 7000);
+        $service = new ElasticsearchService();
+        $log = $service->getRandomDocumentFromActivityLogs(18290726, 'activity_logs');
+        dd($log);
+        $count = 50000000;//ActivityLog::count();
+        $query = new GetByUserIdQuery($count, 7000);
         $query->run();
         dd("success");
 
@@ -37,7 +43,7 @@ class TestController extends Controller
 
 
         $service = new ElasticsearchService();
-        $log = $service->getDocumentById(18290726, 'activity_logs');
+        $log = $service->getRandomDocumentFromActivityLogs(18290726, 'activity_logs');
         dd($log);
 
         dd($log);

@@ -170,6 +170,23 @@ class ElasticsearchService
         $response =  $this->client->search($params);
         return $response->asArray();
     }
+    public function getDocumentByUserId($id, $index, $size)
+    {
+        $params = [
+            'index' => $index,
+            'size'  =>$size,
+            'body'  => [
+                'query' => [
+                    'term' => [
+                        'performed_by_user_id' => $id
+                    ]
+                ]
+            ]
+        ];
+
+        $response =  $this->client->search($params);
+        return $response->asArray();
+    }
 
     public function getByModelType($modelType, $size = 500)
     {
@@ -187,6 +204,25 @@ class ElasticsearchService
 
         return $this->client->search($params)->asArray();
     }
+
+    public function getByActivityTypeId($id, $size)
+    {
+        $params = [
+            'index' => 'activity_logs',
+            'size'  => $size,
+            'body'  => [
+                'query' => [
+                    'term' => [
+                        'activity_type_id' => $id
+                    ]
+                ]
+            ]
+        ];
+
+        $response =  $this->client->search($params);
+        return $response->asArray();
+    }
+
 
 
 
