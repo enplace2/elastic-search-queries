@@ -11,6 +11,7 @@ use App\Queries\GetByActivityTypeQuery;
 use App\Queries\GetByIdQuery;
 use App\Queries\GetByModelTypeQuery;
 use App\Queries\GetByUserIdQuery;
+use App\Queries\SearchPropertiesQueries;
 use App\Services\ElasticsearchService;
 use Illuminate\Http\Request;
 
@@ -21,11 +22,16 @@ class TestController extends Controller
     {
 
         $service = new ElasticsearchService();
-        $log = $service->searchProperties('key1', 'ipsa', 7000);
+        dd($service->getMapping('activity_logs'));
+
+
+ /*       $service = new ElasticsearchService();
+        $log = $service->getRandomDocumentFromActivityLogs();
         dd($log);
+        */
         $count = 50000000;//ActivityLog::count();
-        $query = new GetByUserIdQuery($count, 7000);
-        $query->run();
+        $query = new SearchPropertiesQueries($count, 7000);
+        $query->queryOnSubkey2();
         dd("success");
 
         $className = Address::class;

@@ -64,7 +64,7 @@ class ElasticsearchService
     public function getMapping($indexName)
     {
         $params = ['index' => $indexName];
-        $response = $this->client->indices()->getMapping($params);
+        $response = $this->client->indices()->getMapping($params)->asArray();
         return $response;
     }
 
@@ -237,6 +237,7 @@ class ElasticsearchService
             ]
         ];
 
+
         return $this->client->search($params)->asArray();
     }
 
@@ -244,12 +245,12 @@ class ElasticsearchService
     {
 
         $range = [
+            'lte' => $max,   // Less than or equal to
             'gte' => $min,  // Greater than or equal to
-            'lte' => $max   // Less than or equal to
         ];
-        if($format){
+      /*  if($format){
            $range =  array_merge($range, ['format' => $format]);
-        }
+        }*/
 
 
         $params = [
@@ -263,8 +264,25 @@ class ElasticsearchService
                 ]
             ]
         ];
+        //dd($params);
 
-        return $this->client->search($params);
+        return $this->client->search($params)->asArray();
+    }
+
+    public function testWildcard(){
+        $params = [
+            'index' => 'activity_logs',
+            'size' => 7000,
+            'body' => [
+                'query' => [
+                    'match' => [
+                        'properties.key4.sub_key2' => '2023-04'
+                    ]
+                ]
+            ]
+        ];
+        $results = $this->client->search($params)->asArray();
+        dd("here",$results);
     }
 
 
