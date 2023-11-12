@@ -21,17 +21,30 @@ class TestController extends Controller
     public function test()
     {
 
+        $queryTypes = QueryType::with('queryTimes')->get();
+        dd($queryTypes->toArray());
+
+     $queryTypes = QueryType::with('queryTimes')->get();
+        foreach ($queryTypes as $queryType) {
+            dump($queryType->toArray());
+            dump($queryType->queryTimes->count());
+            dump("----------------");
+        }
+/*
+        $log = new ElasticSearchActivityLog();
+        $log->reindexWithNewMapping();
+
         $service = new ElasticsearchService();
-        dd($service->getMapping('activity_logs'));
+        dd($service->getMapping('activity_logs'));*/
 
+/*
+        $service = new ElasticsearchService();
+        $log = $service->getDocumentCount('activity_logs');
+        dd($log);*/
 
- /*       $service = new ElasticsearchService();
-        $log = $service->getRandomDocumentFromActivityLogs();
-        dd($log);
-        */
         $count = 50000000;//ActivityLog::count();
         $query = new SearchPropertiesQueries($count, 7000);
-        $query->queryOnSubkey2();
+        $query->run();
         dd("success");
 
         $className = Address::class;

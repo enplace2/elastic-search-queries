@@ -2,6 +2,7 @@
 
 namespace App\Queries;
 
+use App\Interfaces\RunsQuery;
 use App\Models\ActivityLog;
 use App\Models\Address;
 use App\Models\File;
@@ -11,7 +12,7 @@ use App\Traits\ElasticsearchQuery;
 use App\Traits\LogsQueryTimes;
 use App\Traits\QueriesMysql;
 
-class SearchPropertiesQueries
+class SearchPropertiesQueries implements RunsQuery
 {
     use LogsQueryTimes, QueriesMysql, ElasticsearchQuery;
 
@@ -19,10 +20,10 @@ class SearchPropertiesQueries
     private string $loremSubstring2 = "labor";
     private array $keys = ["key1", "key2", "key3", "key4"];
     private array $subKeys = ["sub_key1", "sub_key2"];
-    public function __construct($totalRecordCount, $recordsToFetch)
+    public function __construct($mysqlRecordCount, $recordsToFetch)
     {
         $this->initializeElasticsearchQueryTrait();
-        $this->initializeQueriesMysqlTrait($totalRecordCount);
+        $this->initializeQueriesMysqlTrait($mysqlRecordCount);
         $this->recordsToFetch = $recordsToFetch;
 
         // first or create the type
@@ -31,6 +32,11 @@ class SearchPropertiesQueries
     }
 
     public function run() {
+        $this->queryOnKey1();
+        $this->queryOnKey2();
+        $this->queryOnKey3();
+        $this->queryOnSubkey1();
+        $this->queryOnSubkey2();
 
 
     }
@@ -145,11 +151,11 @@ class SearchPropertiesQueries
             size: $this->recordsToFetch,
             format: 'yyyy-MM-dd HH:mm:ss'
         );
-        dd($response);
         $this->logElasticSearchQueryTime($response, $queryType->id, false);
 
-        $query = ActivityLog::whereBetween('properties->key4->sub_key2', [$start, $end])->get();
+        $query = ActivityLog::whereBetween('properties->key4->sub_key2', [$start, $end])->limit($this->recordsToFetch);
         $results = $this->runQueryAndRecordTime($query);
+
         $this->logMysqlQueryTime($queryType->id, $results);
     }
 }

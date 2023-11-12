@@ -2,6 +2,7 @@
 
 namespace App\Queries;
 
+use App\Interfaces\RunsQuery;
 use App\Models\ActivityLog;
 use App\Models\QueryType;
 use App\Models\User;
@@ -9,16 +10,16 @@ use App\Traits\ElasticsearchQuery;
 use App\Traits\LogsQueryTimes;
 use App\Traits\QueriesMysql;
 
-class GetByUserIdQuery
+class GetByUserIdQuery implements RunsQuery
 {
     use LogsQueryTimes, QueriesMysql, ElasticsearchQuery;
 
     private int $queryTypeId = 0;
-    public function __construct($totalRecordCount, $recordsToFetch)
+    public function __construct($mysqlRecordCount, $recordsToFetch)
     {
 
         $this->initializeElasticsearchQueryTrait();
-        $this->initializeQueriesMysqlTrait($totalRecordCount);
+        $this->initializeQueriesMysqlTrait($mysqlRecordCount);
         $this->randomUserId = mt_rand(1, User::count());
         $this->recordsToFetch = $recordsToFetch;
 

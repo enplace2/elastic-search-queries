@@ -2,21 +2,22 @@
 
 namespace App\Queries;
 
+use App\Interfaces\RunsQuery;
 use App\Models\ActivityLog;
 use App\Models\QueryType;
 use App\Traits\ElasticsearchQuery;
 use App\Traits\QueriesMysql;
 use App\Traits\LogsQueryTimes;
 
-class GetByIdQuery
+class GetByIdQuery implements RunsQuery
 {
     use LogsQueryTimes, QueriesMysql, ElasticsearchQuery;
 
     private int $queryTypeId = 0;
-    public function __construct($totalRecordCount)
+    public function __construct($mysqlRecordCount, $recordsToFetch)
     {
         $this->initializeElasticsearchQueryTrait();
-        $this->initializeQueriesMysqlTrait($totalRecordCount);
+        $this->initializeQueriesMysqlTrait($mysqlRecordCount);
 
         // first or create the type
         $queryType = $this->firstOrCreateType();
@@ -46,6 +47,6 @@ class GetByIdQuery
             $randomId = $this->getRandomMysqlId();
             $query = ActivityLog::whereId($randomId);
             $results = $this->runQueryAndRecordTime($query, 'first');
-            $this->logMysqlQueryTime($this->queryTypeId, $results);
+            $this->logMysqlQueryTime($this->queryTypeId, $results, true);
     }
 }

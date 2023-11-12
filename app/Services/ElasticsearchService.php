@@ -117,7 +117,7 @@ class ElasticsearchService
     public function getDocumentCount(string $indexName)
     {
         $params = ['index' => $indexName];
-        $response = $this->client->count($params);
+        $response = $this->client->count($params)->asArray();
         return $response;
     }
 
@@ -128,10 +128,10 @@ class ElasticsearchService
         return $response;
     }
 
-    public function getRandomDocumentFromActivityLogs()
+    public function getRandomDocumentFromActivityLogs($indexName)
     {
         $params = [
-            'index' => 'activity_logs',
+            'index' => $indexName,
             'body'  => [
                 'query' => [
                     'function_score' => [
@@ -248,9 +248,9 @@ class ElasticsearchService
             'lte' => $max,   // Less than or equal to
             'gte' => $min,  // Greater than or equal to
         ];
-      /*  if($format){
+      if($format){
            $range =  array_merge($range, ['format' => $format]);
-        }*/
+        }
 
 
         $params = [
@@ -283,6 +283,16 @@ class ElasticsearchService
         ];
         $results = $this->client->search($params)->asArray();
         dd("here",$results);
+    }
+
+    public function aliasIndex(){
+        $this->client->indices()->delete(['index' => 'activity_logs']);
+
+        // 4. Rename the new index to the original index name
+        return $this->client->indices()->putAlias([
+            'index' => 'activity_logs_v2',
+            'name' => 'activity_logs'
+        ])->asArray();
     }
 
 

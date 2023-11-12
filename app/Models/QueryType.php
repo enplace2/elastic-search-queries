@@ -15,4 +15,8 @@ class QueryType extends Model
     {
         return $this->hasMany(QueryTime::class);
     }
+
+    public function averageQueryTimes(){
+        return $this->hasMany(AverageQueryTime::class);
+    }
 }

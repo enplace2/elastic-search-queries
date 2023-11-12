@@ -2,6 +2,7 @@
 
 namespace App\Queries;
 
+use App\Interfaces\RunsQuery;
 use App\Models\ActivityLog;
 use App\Models\ActivityType;
 use App\Models\Address;
@@ -12,15 +13,15 @@ use App\Traits\ElasticsearchQuery;
 use App\Traits\LogsQueryTimes;
 use App\Traits\QueriesMysql;
 
-class GetByActivityTypeQuery
+class GetByActivityTypeQuery implements RunsQuery
 {
     use LogsQueryTimes, QueriesMysql, ElasticsearchQuery;
 
     private int $queryTypeId = 0;
-    public function __construct($totalRecordCount, $recordsToFetch)
+    public function __construct($mysqlRecordCount, $recordsToFetch)
     {
         $this->initializeElasticsearchQueryTrait();
-        $this->initializeQueriesMysqlTrait($totalRecordCount);
+        $this->initializeQueriesMysqlTrait($mysqlRecordCount);
         $this->recordsToFetch = $recordsToFetch;
         $this->activityTypes = ActivityType::all();
 

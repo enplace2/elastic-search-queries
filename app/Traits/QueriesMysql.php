@@ -41,7 +41,7 @@ trait QueriesMysql
         ];
     }
 
-    public function logMysqlQueryTime($queryTypeId, $queryTimeResults): void
+    public function logMysqlQueryTime($queryTypeId, $queryTimeResults, $logResults= false): void
     {
         $duration = $queryTimeResults['took'];
         $results = $queryTimeResults['results'];
@@ -52,9 +52,10 @@ trait QueriesMysql
             $queryTypeId,
             $duration,
             'mysql',
-            $results,
+            $logResults? $results : '',
             $this->totalRecordCount,
-            recordsReturned: $numberOfResults);
+            recordsReturned: $numberOfResults
+        );
     }
 
     public function getRandomMysqlId(){
