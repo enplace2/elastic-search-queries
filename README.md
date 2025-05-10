@@ -1,1 +1,1 @@
-Messing around with elastic query 
+Messing around with elastic query and search times
